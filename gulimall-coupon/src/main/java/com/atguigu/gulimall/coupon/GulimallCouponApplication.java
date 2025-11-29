@@ -26,6 +26,25 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  *   在对应参数中增加 @Value(“${配置项的名称}”)
  *   配置中心文件 优先级 大于 当前应用的配置
  *
+ * 2.细节
+ * 1） 命名空间： 配置隔离；
+ *  默认：public(保留空间); 默认新增的所有配置都在public空间
+ *  1.开发，测试，生产：利用命名空间来做环境隔离。
+ *       注意：在 bootstrap.properties 配置上，需要使用哪个命名空间下的配置，
+ *        spring.cloud.nacos.config.namespace=9de62e44-cd2a-4a82-bf5c-95878bd5e871
+ *   2.每一个微服务之间互相隔离配置，每一个微服务都创建自己的命名空间，只加载自己命名空间下的所有配置。
+ *
+ * 2）、配置集：所有的配置的集合
+ *
+ * 3）、配置集ID：类似文件名。
+ * Data ID：类似文件名
+ *
+ * 4）、配置分组：
+ * 默认所有的配置集都属于：DEFAULT_GROUP；
+ * 例如：1111，618，1212
+ *
+ * 核心配置原则：
+ * 每个微服务创建自己的命名空间，使用配置分组区分环境（dev, test, prod）
  */
 
 @MapperScan("com.atguigu.gulimall.coupon.dao")
