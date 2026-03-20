@@ -62,7 +62,8 @@ public class BrandController {
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:brand:save")
-    public R save(@Valid @RequestBody BrandEntity brand, BindingResult result){
+    public R save(@Valid @RequestBody BrandEntity brand/*, BindingResult result */){
+        /*
         if(result.hasErrors()){
             Map<String,String> map = new HashMap<>();
             result.getFieldErrors().forEach((item) ->{
@@ -75,8 +76,9 @@ public class BrandController {
         }else {
             brandService.save(brand);
             return R.ok();
-        }
-
+        }*/
+        brandService.save(brand);
+        return R.ok();
     }
 
     /**
