@@ -31,6 +31,7 @@ public class GulimallExceptionControllerAdvice {
 
     @ExceptionHandler(value = Throwable.class)
     public R handleException(Throwable throwable) {
+        log.error("系统异常信息：{}",throwable);
         return R.error(BigCodeEnume.UNKNOW_EXCEPTION.getCode(), BigCodeEnume.UNKNOW_EXCEPTION.getMsg());
     }
 }

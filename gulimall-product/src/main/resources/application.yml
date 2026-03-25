@@ -21,5 +21,6 @@ mybatis-plus:
 logging:
   level:
     com.atguigu.product.dao: DEBUG
+    com.atguigu.gulimall: debug
 server:
   port: 11000
