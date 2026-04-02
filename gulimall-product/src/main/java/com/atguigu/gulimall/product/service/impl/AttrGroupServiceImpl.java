@@ -1,8 +1,15 @@
 package com.atguigu.gulimall.product.service.impl;
 
 
+import com.atguigu.gulimall.product.entity.CategoryEntity;
+import com.atguigu.gulimall.product.service.CategoryService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -17,6 +24,10 @@ import com.atguigu.gulimall.product.service.AttrGroupService;
 
 @Service("attrGroupService")
 public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEntity> implements AttrGroupService {
+
+    @Autowired
+    private CategoryService categoryService;
+
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -55,5 +66,27 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
         }
     }
 
+    @Override
+    public Long[] findCategoryPath(Long catelogId) {
+
+        List<Long> list = new ArrayList<>();
+        findCategoryPath(catelogId,list);
+        Collections.reverse(list);
+
+        return list.toArray(new Long[list.size()]);
+    }
+
+    /**
+     * 递归寻找父元素
+     * @param catelogId
+     * @param categoryIdPath
+     */
+    private void findCategoryPath(Long catelogId, List<Long> categoryIdPath) {
+        categoryIdPath.add(catelogId);
+        CategoryEntity category = categoryService.getById(catelogId);
+        if (category!=null && category.getParentCid() != 0){
+            findCategoryPath(category.getParentCid(),categoryIdPath);
+        }
+    }
 
 }

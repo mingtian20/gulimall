@@ -61,6 +61,13 @@ public class AttrGroupController {
     //@RequiresPermissions("product:attrgroup:info")
     public R info(@PathVariable("attrGroupId") Long attrGroupId){
 		AttrGroupEntity attrGroup = attrGroupService.getById(attrGroupId);
+        Long catelogId = attrGroup.getCatelogId();
+
+        Long[] categoryIdPath = attrGroupService.findCategoryPath(catelogId);
+
+
+        attrGroup.setCategoryIdPath(categoryIdPath);
+
 
         return R.ok().put("attrGroup", attrGroup);
     }
