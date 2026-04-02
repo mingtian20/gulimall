@@ -1,5 +1,10 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.atguigu.gulimall.product.entity.AttrAttrgroupRelationEntity;
+import com.atguigu.gulimall.product.service.AttrAttrgroupRelationService;
+import com.atguigu.gulimall.product.vo.AttrVO;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -16,6 +21,8 @@ import com.atguigu.gulimall.product.service.AttrService;
 @Service("attrService")
 public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements AttrService {
 
+    @Autowired
+    private  AttrAttrgroupRelationService attrAttrgroupRelationService;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AttrEntity> page = this.page(
@@ -24,6 +31,19 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public void saveAttrVO(AttrVO attr) {
+        AttrEntity attrEntity = new AttrEntity();
+        BeanUtils.copyProperties(attr, attrEntity);
+        this.save(attrEntity);
+
+        AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
+        relationEntity.setAttrGroupId(attr.getAttrGroupId());
+        relationEntity.setAttrId(attrEntity.getAttrId());
+        attrAttrgroupRelationService.save(relationEntity);
+
     }
 
 }

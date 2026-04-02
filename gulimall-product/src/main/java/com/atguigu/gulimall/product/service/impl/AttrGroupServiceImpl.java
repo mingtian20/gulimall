@@ -44,16 +44,15 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
         if (catelogId==0){
             IPage<AttrGroupEntity> page = this.page(
                     new Query<AttrGroupEntity>().getPage(params),
-                    new QueryWrapper<AttrGroupEntity>().eq("catelog_id",catelogId)
+                    new QueryWrapper<AttrGroupEntity>()
             );
-
             return new PageUtils(page);
         }else {
             String key = (String) params.get("key");
             //SQL:  select * from pms_attr_group where catelogId = ?  and (attrGroupId=? or attrGroupName like ?)
             QueryWrapper<AttrGroupEntity> wrapper = new QueryWrapper<AttrGroupEntity>().eq("catelog_id",catelogId);
 
-            if (!StringUtils.isNotEmpty(key)){
+            if (StringUtils.isNotEmpty(key)){
                 wrapper.and((obj)->{
                     obj.eq("attr_group_id",key).or().like("attr_group_name",key);
                 });
