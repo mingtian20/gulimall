@@ -7,8 +7,10 @@ import com.atguigu.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import com.atguigu.gulimall.product.entity.AttrGroupEntity;
 import com.atguigu.gulimall.product.entity.CategoryEntity;
 import com.atguigu.gulimall.product.service.AttrAttrgroupRelationService;
+import com.atguigu.gulimall.product.service.AttrGroupService;
 import com.atguigu.gulimall.product.vo.AttrRespVO;
 import com.atguigu.gulimall.product.vo.AttrVO;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import com.atguigu.common.utils.Query;
 import com.atguigu.gulimall.product.dao.AttrDao;
 import com.atguigu.gulimall.product.entity.AttrEntity;
 import com.atguigu.gulimall.product.service.AttrService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("attrService")
@@ -44,6 +47,8 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     @Autowired
     private AttrGroupDao   attrGroupDao;
 
+    @Autowired
+    private AttrGroupService attrGroupService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -55,6 +60,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         return new PageUtils(page);
     }
 
+    @Transactional
     @Override
     public void saveAttrVO(AttrVO attr) {
         AttrEntity attrEntity = new AttrEntity();
@@ -109,6 +115,61 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         PageUtils pageUtils = new PageUtils(page);
         pageUtils.setList(attrRespVOList);
         return pageUtils;
+    }
+
+    /**
+     * 根据ID获取详细信息（联查信息）
+     * @param attrId
+     * @return
+     */
+    @Override
+    public AttrRespVO getAttrInfo(Long attrId) {
+        AttrEntity attrEntity = baseMapper.selectById(attrId);
+        AttrRespVO attrRespVO = new AttrRespVO();
+        BeanUtils.copyProperties(attrEntity, attrRespVO);
+
+        //赋值groupName
+        AttrAttrgroupRelationEntity relationEntity = attrAttrgroupRelationDao
+                .selectOne(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrEntity.getAttrId()));
+        if (relationEntity != null) {
+            attrRespVO.setAttrGroupId(relationEntity.getAttrGroupId());
+            AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(relationEntity.getAttrGroupId());
+            if (attrGroupEntity != null) {
+                attrRespVO.setGroupName(attrGroupEntity.getAttrGroupName());
+            }
+        }
+
+        Long[] categoryPath = attrGroupService.findCategoryPath(attrEntity.getCatelogId());
+        attrRespVO.setCatelogPath(categoryPath);
+        CategoryEntity categoryEntity = categoryDao.selectById(attrEntity.getCatelogId());
+        attrRespVO.setCatelogName(categoryEntity.getName());
+
+        return attrRespVO;
+    }
+
+    /**
+     * 更新数据
+     * @param attrVO
+     */
+    @Transactional
+    @Override
+    public void updateAttr(AttrVO attrVO) {
+        //更新原表
+        AttrEntity attrEntity = new AttrEntity();
+        BeanUtils.copyProperties(attrVO, attrEntity);
+        this.updateById(attrEntity);
+
+        //更新关联关系表
+        AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
+        relationEntity.setAttrGroupId(attrVO.getAttrGroupId());
+        relationEntity.setAttrId(attrEntity.getAttrId());
+        Integer count = attrAttrgroupRelationDao.selectCount(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrVO.getAttrId()));
+        if (count > 0) {
+            attrAttrgroupRelationDao.update(relationEntity,new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrVO.getAttrId()));
+        }else {
+            attrAttrgroupRelationDao.insert(relationEntity);
+        }
+
     }
 
 }

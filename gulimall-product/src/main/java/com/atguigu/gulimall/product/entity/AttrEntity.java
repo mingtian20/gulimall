@@ -40,6 +40,10 @@ public class AttrEntity implements Serializable {
 	 * 可选值列表[用逗号分隔]
 	 */
 	private String valueSelect;
+
+    //可选值类型 [1-单选值  2-多选值]
+    private Integer valueType;
+
 	/**
 	 * 属性类型[0-销售属性，1-基本属性，2-既是销售属性又是基本属性]
 	 */
