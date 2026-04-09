@@ -1,15 +1,16 @@
 package com.atguigu.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.atguigu.gulimall.product.entity.AttrEntity;
+import com.atguigu.gulimall.product.service.AttrService;
+import com.atguigu.gulimall.product.service.impl.AttrAttrgroupRelationServiceImpl;
+import com.atguigu.gulimall.product.vo.AttrGroupRelationVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.atguigu.gulimall.product.entity.AttrGroupEntity;
 import com.atguigu.gulimall.product.service.AttrGroupService;
@@ -30,6 +31,11 @@ import com.atguigu.common.utils.R;
 public class AttrGroupController {
     @Autowired
     private AttrGroupService attrGroupService;
+
+    @Autowired
+    private AttrService attrService;
+    @Autowired
+    private AttrAttrgroupRelationServiceImpl attrAttrgroupRelationService;
 
     /**
      * 列表
@@ -105,4 +111,20 @@ public class AttrGroupController {
         return R.ok();
     }
 
+//     /product/attrgroup/{attrgroupId}/attr/relation
+    @GetMapping("/{attrgroupId}/attr/relation")
+    public R attrRelation(@PathVariable("attrgroupId") Long attrgroupId){
+        List<AttrEntity> relationAttr = attrService.getRelationAttr(attrgroupId);
+
+        return R.ok().put("data", relationAttr);
+    }
+
+
+//    /product/attrgroup/attr/relation/delete
+    @PostMapping("/attr/relation/delete")
+    public R deleteRelation(@RequestBody AttrGroupRelationVO[] attrGroupRelationVOS){
+        attrService.deleteRelation(attrGroupRelationVOS);
+
+        return R.ok().put("data", attrGroupRelationVOS);
+    }
 }
