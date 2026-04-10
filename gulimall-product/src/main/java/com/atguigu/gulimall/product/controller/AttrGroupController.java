@@ -9,6 +9,7 @@ import com.atguigu.gulimall.product.entity.AttrEntity;
 import com.atguigu.gulimall.product.service.AttrService;
 import com.atguigu.gulimall.product.service.impl.AttrAttrgroupRelationServiceImpl;
 import com.atguigu.gulimall.product.vo.AttrGroupRelationVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,7 @@ import com.atguigu.common.utils.R;
  * @email 2572182545@qq.com
  * @date 2025-11-25 16:14:36
  */
+@Slf4j
 @RestController
 @RequestMapping("product/attrgroup")
 public class AttrGroupController {
@@ -111,6 +113,11 @@ public class AttrGroupController {
         return R.ok();
     }
 
+    /**
+     * 查询分组关联的所有属性
+     * @param attrgroupId
+     * @return
+     */
 //     /product/attrgroup/{attrgroupId}/attr/relation
     @GetMapping("/{attrgroupId}/attr/relation")
     public R attrRelation(@PathVariable("attrgroupId") Long attrgroupId){
@@ -120,11 +127,25 @@ public class AttrGroupController {
     }
 
 
+
 //    /product/attrgroup/attr/relation/delete
     @PostMapping("/attr/relation/delete")
     public R deleteRelation(@RequestBody AttrGroupRelationVO[] attrGroupRelationVOS){
         attrService.deleteRelation(attrGroupRelationVOS);
 
         return R.ok().put("data", attrGroupRelationVOS);
+    }
+
+
+    /**
+     * 查询分组没有关联的属性
+     */
+//    /product/attrgroup/{attrgroupId}/noattr/relation
+    @GetMapping("/{attrgroupId}/noattr/relation")
+    public R noAttrRelation(@PathVariable("attrgroupId") Long attrgroupId, @RequestParam Map<String, Object> params){
+        PageUtils noRelationAttr = attrService.getNoRelationAttr(params, attrgroupId);
+
+        return R.ok().put("data", noRelationAttr);
+
     }
 }
