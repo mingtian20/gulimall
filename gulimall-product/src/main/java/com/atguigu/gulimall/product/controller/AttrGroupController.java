@@ -118,7 +118,6 @@ public class AttrGroupController {
      * @param attrgroupId
      * @return
      */
-//     /product/attrgroup/{attrgroupId}/attr/relation
     @GetMapping("/{attrgroupId}/attr/relation")
     public R attrRelation(@PathVariable("attrgroupId") Long attrgroupId){
         List<AttrEntity> relationAttr = attrService.getRelationAttr(attrgroupId);
@@ -127,8 +126,11 @@ public class AttrGroupController {
     }
 
 
-
-//    /product/attrgroup/attr/relation/delete
+    /**
+     * 移除关联关系
+     * @param attrGroupRelationVOS
+     * @return
+     */
     @PostMapping("/attr/relation/delete")
     public R deleteRelation(@RequestBody AttrGroupRelationVO[] attrGroupRelationVOS){
         attrService.deleteRelation(attrGroupRelationVOS);
@@ -140,7 +142,6 @@ public class AttrGroupController {
     /**
      * 查询分组没有关联的属性
      */
-//    /product/attrgroup/{attrgroupId}/noattr/relation
     @GetMapping("/{attrgroupId}/noattr/relation")
     public R noAttrRelation(@PathVariable("attrgroupId") Long attrgroupId, @RequestParam Map<String, Object> params){
         PageUtils noRelationAttr = attrService.getNoRelationAttr(params, attrgroupId);
@@ -148,4 +149,17 @@ public class AttrGroupController {
         return R.ok().put("data", noRelationAttr);
 
     }
+
+    /**
+     * 属性分组手动新建关联关系
+     */
+//     /product/attrgroup/attr/relation
+    @PostMapping("/attr/relation")
+    public R addRelation(@RequestBody List<AttrGroupRelationVO> attrGroupRelationVOS){
+
+        attrAttrgroupRelationService.saveBatch(attrGroupRelationVOS);
+
+        return R.ok();
+    }
+
 }
