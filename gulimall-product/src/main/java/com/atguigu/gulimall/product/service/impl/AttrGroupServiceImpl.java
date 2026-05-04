@@ -3,9 +3,12 @@ package com.atguigu.gulimall.product.service.impl;
 
 import com.atguigu.gulimall.product.dao.AttrAttrgroupRelationDao;
 import com.atguigu.gulimall.product.entity.AttrAttrgroupRelationEntity;
+import com.atguigu.gulimall.product.entity.AttrEntity;
 import com.atguigu.gulimall.product.entity.CategoryEntity;
+import com.atguigu.gulimall.product.service.AttrService;
 import com.atguigu.gulimall.product.service.CategoryService;
 import com.atguigu.gulimall.product.vo.AttrGroupRelationVO;
+import com.atguigu.gulimall.product.vo.AttrGroupWithAttrsVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +40,8 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
     private AttrAttrgroupRelationDao attrAttrgroupRelationDao;
     @Autowired
     private AttrAttrgroupRelationServiceImpl attrAttrgroupRelationService;
-
+    @Autowired
+    private AttrService attrService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -83,6 +87,23 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
         Collections.reverse(list);
 
         return list.toArray(new Long[list.size()]);
+    }
+
+    @Override
+    public List<AttrGroupWithAttrsVO> getAttrGroupWithAttrsByCatelogId(Long catelogId) {
+        List<AttrGroupEntity> attrGroupEntityList = this.list(new QueryWrapper<AttrGroupEntity>().eq("catelog_id", catelogId));
+
+        List<AttrGroupWithAttrsVO> collect = attrGroupEntityList.stream().map(item -> {
+            AttrGroupWithAttrsVO vo = new AttrGroupWithAttrsVO();
+            BeanUtils.copyProperties(item, vo);
+            List<AttrEntity> relationAttr = attrService.getRelationAttr(item.getAttrGroupId());
+            vo.setAttrs(relationAttr);
+
+            return vo;
+        }).collect(Collectors.toList());
+
+
+        return collect;
     }
 
     /**

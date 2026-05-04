@@ -9,6 +9,7 @@ import com.atguigu.gulimall.product.entity.AttrEntity;
 import com.atguigu.gulimall.product.service.AttrService;
 import com.atguigu.gulimall.product.service.impl.AttrAttrgroupRelationServiceImpl;
 import com.atguigu.gulimall.product.vo.AttrGroupRelationVO;
+import com.atguigu.gulimall.product.vo.AttrGroupWithAttrsVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -61,7 +62,7 @@ public class AttrGroupController {
         return R.ok().put("page", page);
     }
 
-
+    
     /**
      * 信息
      */
@@ -160,6 +161,19 @@ public class AttrGroupController {
         attrAttrgroupRelationService.saveBatch(attrGroupRelationVOS);
 
         return R.ok();
+    }
+
+
+    /**
+     * 根据分组ID查询商品属性
+     * @param catelogId
+     * @return
+     */
+    @GetMapping("/{catelogId}/withattr")
+    public R getAttrGroupWithAttrs(@PathVariable("catelogId") Long catelogId){
+
+        List<AttrGroupWithAttrsVO> groupWithAttrsVOS =   attrGroupService.getAttrGroupWithAttrsByCatelogId(catelogId);
+        return R.ok().put("data", groupWithAttrsVOS);
     }
 
 }
