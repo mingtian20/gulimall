@@ -192,4 +192,43 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     }
 
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+        QueryWrapper<SpuInfoEntity> wrapper = new QueryWrapper<>();
+        /**
+         * key:
+         *
+         * catalogId
+         *
+         * brandId:
+         *
+         * status
+         */
+        String key = (String) params.get("key");
+        if (!StringUtils.isEmpty(key)){
+            wrapper.and(w -> w.eq("id", key).or().like("spu_name", key));
+        }
+
+        String catalogId = (String) params.get("catalogId");
+        if (!StringUtils.isEmpty(catalogId)){
+            wrapper.eq("catalog_id",catalogId);
+        }
+
+        String brandId = (String) params.get("brandId");
+        if (!StringUtils.isEmpty(brandId)){
+            wrapper.eq("brand_id",brandId);
+        }
+
+        String status = (String) params.get("status");
+        if (!StringUtils.isEmpty(status) ){
+            wrapper.eq("publish_status",status);
+        }
+
+        IPage<SpuInfoEntity> page = this.page(
+                new Query<SpuInfoEntity>().getPage(params),
+                wrapper
+        );
+        return new PageUtils(page);
+    }
+
 }
