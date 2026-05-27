@@ -209,13 +209,13 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             wrapper.and(w -> w.eq("id", key).or().like("spu_name", key));
         }
 
-        String catalogId = (String) params.get("catalogId");
-        if (!StringUtils.isEmpty(catalogId)){
+        String catalogId = (String) params.get("catelogId");
+        if (!StringUtils.isEmpty(catalogId) && !"0".equals(catalogId)){
             wrapper.eq("catalog_id",catalogId);
         }
 
         String brandId = (String) params.get("brandId");
-        if (!StringUtils.isEmpty(brandId)){
+        if (!StringUtils.isEmpty(brandId) && !"0".equals(brandId)){
             wrapper.eq("brand_id",brandId);
         }
 
